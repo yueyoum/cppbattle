@@ -20,10 +20,10 @@ class BattleMap
         BattleMap(int, int, int);
         ~BattleMap();
 
-        bool put_left_chars(vector<Character>&);
-        bool put_right_chars(vector<Character>&);
+        bool put_left_chars(Character **, int);
+        bool put_right_chars(Character **, int);
 
-        void output(void) const;
+        void output(void);
 
 
     private:

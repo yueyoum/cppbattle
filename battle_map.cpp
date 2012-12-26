@@ -5,12 +5,12 @@
 
 using namespace std;
 
-BattleMap::BattleMap():bg(1), width(9), height(3)
+BattleMap::BattleMap():bg(1), width(6), height(3)
 {
     initialize();
 }
 
-BattleMap::BattleMap(int b):bg(b), width(9), height(3)
+BattleMap::BattleMap(int b):bg(b), width(6), height(3)
 {
     initialize();
 }
@@ -29,7 +29,7 @@ BattleMap::~BattleMap()
         {
             for(auto &c: line)
             {
-                //if(c) delete c;
+                if(c) delete c;
             }
         }
     };
@@ -44,6 +44,11 @@ void BattleMap::initialize(void)
 {
     charprt_vec_t line;
     int half_width = width/2;
+
+    line.reserve(half_width);
+    left.reserve(height);
+    right.reserve(height);
+
     auto init_one_side = [this, &line, &half_width](matrix_t &side)
     {
         for(int h=0; h<this->height; h++)
@@ -51,7 +56,6 @@ void BattleMap::initialize(void)
             for(int w=0; w<half_width; w++)
             {
                 line.push_back(NULL);
-                cout << "init" << endl;
             }
             side.push_back(line);
             line.clear();
@@ -67,22 +71,24 @@ void BattleMap::initialize(void)
 
 
 
-bool BattleMap::put_left_chars(vector<Character> &chars)
+bool BattleMap::put_left_chars(Character **chars, int size)
 {
-    for(auto &c: chars)
+    int x, y;
+    for(int i=0; i<size; i++)
     {
-        if( left[c.get_y()][c.get_x()] ) return false;
-        left[c.get_y()][c.get_x()] = &c;
+        y = (*(chars+i))->get_y();
+        x = (*(chars+i))->get_x();
+        if(left[y][x]) return false;
+        left[y][x] = *(chars+i);
     }
     return true;
 }
 
-bool BattleMap::put_right_chars(vector<Character> &chars)
+bool BattleMap::put_right_chars(Character **chars, int size)
 {
     // reverse x first. 0 -> 2, 1 -> 1, 2 -> 0
 
     int half_width = width / 2;
-    int new_x;
     auto reverse_x = [&half_width](int x)->int
     {
         if(half_width % 2 != 0)
@@ -101,27 +107,33 @@ bool BattleMap::put_right_chars(vector<Character> &chars)
         }
     };
 
-    for(auto &c: chars)
+
+    int x, y, new_x;
+    for(int i=0; i<size; i++)
     {
-        new_x = reverse_x(c.get_x());
-        if( right[c.get_y()][new_x] ) return false;
-        right[c.get_y()][new_x] = &c;
+        y = (*(chars+i))->get_y();
+        x = (*(chars+i))->get_x();
+        new_x = reverse_x(x);
+        if( right[y][new_x] ) return false;
+        right[y][new_x] = *(chars+i);
     }
     return true;
 }
 
-void BattleMap::output(void) const
+void BattleMap::output(void)
 {
     for(auto &line: left)
     {
         for(auto &c: line)
-            cout << (c ? 'A' : ' ') << "  " << endl;
+            cout << (c ? c->get_s() : ".") << "  ";
+        cout << endl;
     }
     cout << endl;
     for(auto &line: right)
     {
         for(auto &c: line)
-            cout << (c ? 'A' : ' ') << "  " << endl;
+            cout << (c ? c->get_s() : ".") << "  ";
+        cout << endl;
     }
 }
 
@@ -129,24 +141,23 @@ void BattleMap::output(void) const
 // for test
 int main(void)
 {
-    vector<Character> team1;
-    vector<Character> team2;
+    Character *team1[3];
+    Character *team2[3];
 
-    team1.push_back(Character("a", 0, 0));
-    team1.push_back(Character("b", 1, 1));
-    team1.push_back(Character("c", 1, 2));
+    *(team1+0) = new Character("a", 0, 1);
+    *(team1+1) = new Character("b", 1, 1);
+    *(team1+2) = new Character("c", 1, 2);
 
-    team2.push_back(Character("d", 0, 0));
-    team2.push_back(Character("e", 0, 2));
-    team2.push_back(Character("f", 1, 1));
+    *(team2+0) = new Character("d", 0, 0);
+    *(team2+1) = new Character("e", 0, 2);
+    *(team2+2) = new Character("f", 1, 1);
 
-    cout << "aaa" << endl;
 
     BattleMap battle;
-    battle.put_left_chars(team1);
-    battle.put_right_chars(team2);
+    battle.put_left_chars(team1, 3);
+    battle.put_right_chars(team2, 3);
 
-    //battle.output();
+    battle.output();
     return 0;
 
 }

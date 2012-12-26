@@ -14,6 +14,7 @@ class Character
         int get_cid(void)const{return 1;};
         int get_y(void)const{return y;};
         int get_x(void)const{return x;};
+        string get_s(void)const{return s;};
 
 
     private:
