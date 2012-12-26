@@ -2,27 +2,28 @@
 #define BATTLE_MAP_H_INCLUDED
 
 #include <vector>
-#include <map>
 
 using namespace std;
 
 #include "character.h"
 
 
-typedef map<int, Character> cid_char_t;
-typedef vector<int> line_t;
-typedef vector<line_t> matrix_t;
+typedef vector<Character*> charprt_vec_t;
+typedef vector<charprt_vec_t> matrix_t;
 
 
 class BattleMap
 {
     public:
-        BattleMap(void);
+        BattleMap();
         BattleMap(int);
         BattleMap(int, int, int);
-        bool put_char(Character&);
-        vector<Character>& get_chars(void);
-        vector<Character>& get_chars(matrix_t::iterator&, matrix_t::iterator&);
+        ~BattleMap();
+
+        bool put_left_chars(vector<Character>&);
+        bool put_right_chars(vector<Character>&);
+
+        void output(void) const;
 
 
     private:
@@ -30,12 +31,11 @@ class BattleMap
         int width;
         int height;
 
-        // map类型，first为 cid, second 为 Character
-        cid_char_t cid_chars;
-
-        matrix_t matrix;
+        matrix_t left;
+        matrix_t right;
 
         void initialize(void);
+
 };
 
 
